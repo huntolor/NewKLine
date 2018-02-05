@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Window> <!-- 窗口的初始尺寸 -->
+    <VerticalLayout bkcolor="#FFF0F0F0" bkcolor2="#FFAAAAA0">
+		<HorizontalLayout height="90"/> <!-- 占空位，占据上面所有的空位-->
+        <HorizontalLayout height="90" bkcolor="#FFE6E6DC" bkcolor2="#FFAAAAA0">  
+        </HorizontalLayout>
+		
+		<HorizontalLayout height="90"/> <!-- 占空位，占据上面所有的空位-->
+        <HorizontalLayout height="90" bkcolor="#FFE6E6DC" bkcolor2="#FFAAAAA0">  
+        </HorizontalLayout>
+		
+		<HorizontalLayout height="90"/> <!-- 占空位，占据上面所有的空位-->
+        <HorizontalLayout height="90" bkcolor="#FFE6E6DC" bkcolor2="#FFAAAAA0"> 		
+        </HorizontalLayout>
+		
+		<HorizontalLayout height="90"/> <!-- 占空位，占据上面所有的空位-->
+        <HorizontalLayout height="90" bkcolor="#FFE6E6DC" bkcolor2="#FFAAAAA0"> 		
+        </HorizontalLayout>
+    </VerticalLayout>
+</Window>
