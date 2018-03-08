@@ -8,5 +8,6 @@ int APIENTRY _tWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPTSTR lpCm
 	duiFrame.Create(NULL, _T("DUIWnd"), UI_WNDSTYLE_FRAME, WS_EX_WINDOWEDGE);     //注册窗口 注册超类 -注册窗口类-创建窗口-handlemessage（WM_CREATE消息处理）
 	duiFrame.ShowModal();
 	CPaintManagerUI::MessageLoop();                           //处理消息循环
+	ReadData();
 	return 0;
 }

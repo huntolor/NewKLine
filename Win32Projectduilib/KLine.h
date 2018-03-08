@@ -67,3 +67,7 @@ protected:
 	void PaintDayK(HDC hDC);
 	void Background(HDC hDC);
 };
+
+
+
+void ReadData();
