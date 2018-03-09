@@ -47,9 +47,12 @@ typedef struct coordinate
 }coordinate;
 
 
-class CDuiFrameWnd : public CWindowWnd, public INotifyUI
+class CDuiFrameWnd : public CWindowWnd, public INotifyUI, public CRenderEngine
 {
 public:
+	CDuiFrameWnd();
+	~CDuiFrameWnd();
+
 	virtual LPCTSTR GetWindowClassName() const { return _T("DUIMainFrame"); }
 	virtual void    Notify(TNotifyUI& msg) {}
 	virtual LRESULT HandleMessage(UINT uMsg, WPARAM wParam, LPARAM lParam);
@@ -66,6 +69,10 @@ protected:
 	void PaintXY(HDC hDC);
 	void PaintDayK(HDC hDC);
 	void Background(HDC hDC);
+
+private:
+	CRenderEngine* CRender;
+	CPaintManagerUI* pManager;
 };
 
 

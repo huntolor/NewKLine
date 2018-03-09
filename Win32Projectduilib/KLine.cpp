@@ -77,85 +77,78 @@ void ReadData()
 	CloseHandle(hDataFile);
 }
 
+
+CDuiFrameWnd::CDuiFrameWnd()
+{
+	CRender = new CRenderEngine();
+	pManager = new CPaintManagerUI();
+}
+
+CDuiFrameWnd::~CDuiFrameWnd()
+{
+	delete CRender;
+}
+
+//将原使用GDI绘制改为Duilib
 void CDuiFrameWnd::PaintXY(HDC hDC)
 {
-	HPEN hPen = CreatePen(PS_SOLID, 1, RGB(0, 0, 0));
-	HPEN hPenOld = (HPEN)SelectObject(hDC, hPen);
-	MoveToEx(hDC, 100, 0, NULL);
-	LineTo(hDC, 100, 700);
-	LineTo(hDC, 1000, 700);
+	RECT RcFirst = { 100, 0, 100, 700 };
+	RECT RcSecond = { 100, 0, 1000, 700 };
+	CRender->DrawLine(hDC, RcFirst, 1, RGB(0, 0, 0), PS_SOLID);
+	CRender->DrawLine(hDC, RcSecond, 1, RGB(0, 0, 0), PS_SOLID);
+
 
 	for (int y = COORDINATE1_LEN; y>=COORDINATE8_LEN; y = y - COORDINATE_DISTANCE)
 	{
-		MoveToEx(hDC, GET_X_COORDINATE(0), GET_Y_COORDINATE(y), NULL);
-		LineTo(hDC, GET_X_COORDINATE(0) - 10, GET_Y_COORDINATE(y));
+		RECT RcFirst = { GET_X_COORDINATE(0), GET_Y_COORDINATE(y), GET_X_COORDINATE(0) - 10, GET_Y_COORDINATE(y) };
+		CRender->DrawLine(hDC, RcFirst, 1, RGB(0, 0, 0), PS_SOLID);
 		
-		std:; wstring str = std::to_wstring(y);
-		SetTextColor(hDC, RGB(0, 0, 0));
-		TextOutW(hDC, GET_X_COORDINATE(0) - 50, GET_Y_COORDINATE(y), str.data(), str.length());
+	    std:: wstring str = std::to_wstring(y);
+		RECT RcSecond = { GET_X_COORDINATE(0) - 50, GET_Y_COORDINATE(y) - 5, GET_X_COORDINATE(0) - 10, GET_Y_COORDINATE(y) +5};
+		CRender->DrawTextW(hDC, pManager, RcSecond, str.c_str(), RGB(0, 0, 0), SYSTEM_FONT, DT_CENTER);
 	}
-	if (hPen != NULL)
-	{
-		DeleteObject(hPen);
-	}
-	ReadData();
 }
 
 //绘制近MA天的K线
 void CDuiFrameWnd::PaintMA(HDC hDC, COLORREF Color, int MA)
 {
-	HPEN hPen = CreatePen(PS_SOLID, 1, Color);
-	HPEN hPenOld = (HPEN)SelectObject(hDC, hPen);
 	int nResult = 0;
+	RECT Rc = {0,0,0,0};
+
 	for (int i = MA; i < g_Data.size(); ++i)
 	{
 		for (int j = i - 1; j >= i - MA; --j)
 		{
 			nResult += g_Data[j].close;
 		}
+
 		if (i == MA)
 		{
-			MoveToEx(hDC, GET_X_COORDINATE(i), GET_Y_COORDINATE(nResult / MA), NULL);
+			Rc = { GET_X_COORDINATE(i), GET_Y_COORDINATE(nResult / MA), GET_X_COORDINATE(i), GET_Y_COORDINATE(nResult / MA) };
 		}
 		else
 		{
-			LineTo(hDC, GET_X_COORDINATE(i), GET_Y_COORDINATE(nResult / MA));
+			CRender->DrawLine(hDC, Rc, 1, Color, PS_SOLID);
+			Rc = { Rc.right, Rc.bottom, GET_X_COORDINATE(i), GET_Y_COORDINATE(nResult / MA) };        //rc前两个成员为上一日的点，后两个为当日的点
 		}
 		nResult = 0;
-	}
-	if (hPen != NULL)
-	{
-		DeleteObject(hPen);
 	}
 }
 
 
 void CDuiFrameWnd::PaintRec(HDC hDC, coordinate Coor1, coordinate Coor2, COLORREF Color)
 {
-	HPEN gPen = CreatePen(PS_SOLID, 1, RGB(0,0,0));
-	HBRUSH bBrush = CreateSolidBrush(Color);
-	HPEN oPen = (HPEN)SelectObject(hDC, gPen);
-	SelectObject(hDC, bBrush);
-	Rectangle(hDC, GET_X_COORDINATE(Coor1.x) - 2, GET_Y_COORDINATE(Coor1.y), GET_X_COORDINATE(Coor1.x) + 2, GET_Y_COORDINATE(Coor2.y));
-	if (gPen != NULL)
-	{
-		DeleteObject(gPen);
-	}
+	RECT Rc = { GET_X_COORDINATE(Coor1.x) - 2, GET_Y_COORDINATE(Coor1.y), GET_X_COORDINATE(Coor1.x) + 2, GET_Y_COORDINATE(Coor2.y) };
+	CRender->DrawRect(hDC, Rc, 1, RGB(0, 0, 0), PS_SOLID);
 }
 
 void CDuiFrameWnd::PaintKLine(HDC hDC, coordinate Coor1, coordinate Coor2, COLORREF Color)
 {
-	HPEN hPen = CreatePen(PS_SOLID, 1, Color);
-	HPEN hPenOld = (HPEN)SelectObject(hDC, hPen);
-	MoveToEx(hDC, GET_X_COORDINATE(Coor1.x), GET_Y_COORDINATE(Coor1.y), NULL);
-	LineTo(hDC, GET_X_COORDINATE(Coor2.x), GET_Y_COORDINATE(Coor2.y));
-	if (hPen != NULL)
-	{
-		DeleteObject(hPen);
-	}
+	RECT Rc = { GET_X_COORDINATE(Coor1.x), GET_Y_COORDINATE(Coor1.y), GET_X_COORDINATE(Coor2.x), GET_Y_COORDINATE(Coor2.y) };
+	CRender->DrawLine(hDC, Rc, 1, Color, PS_SOLID);
 }
 
-
+//日K线
 void CDuiFrameWnd::PaintDayK(HDC hDC)       //最高最低直线 开盘收盘矩形
 {
 	for (int i = 0; i<g_Data.size(); ++i)
